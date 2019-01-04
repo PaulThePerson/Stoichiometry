@@ -1,0 +1,23 @@
+#table {
+	display: flex;
+	flex-wrap: wrap;
+}
+#table div {
+	display: flex;
+	flex-direction: column;
+}
+#table p {
+	border-bottom: 1px solid #ccc;
+}
+
+.output{
+  display:flex;
+  flex-wrap:wrap;
+}
+.unch-label{
+  font-weight:bold;
+}
+
+.output .unch-label{
+  padding-right:5px;
+}

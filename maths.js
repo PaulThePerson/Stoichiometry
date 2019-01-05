@@ -96,7 +96,7 @@ function makeTable(matrix){
     box.appendChild(b);
 
     var c = document.createElement("input");
-    c.placeholder = "NaN";
+    c.placeholder = matrix[2][i];
     c.setAttribute("id", "input" + String(i));
     c.setAttribute("onKeyUp", "comp("+String(i)+")");
     box.appendChild(c);
@@ -106,7 +106,9 @@ function makeTable(matrix){
 }
 
 function change(){
-  console.log("hi");
+  equation="+"+document.getElementById('in').value;
+  assembleMatrix(equation);
+  makeTable(fat);
 }
 
 function comp(x){

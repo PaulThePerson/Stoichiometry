@@ -16,7 +16,7 @@ function fixReturn(thing) {
   return sum;
 }
 
-function basicWeight(molecule){
+function basicWeight(molecule) {
   var parts=molecule.match(/[A-Z][a-z]?[0-9]*/gm);
   var sum=0;
   parts.forEach(function (atom){
@@ -27,7 +27,7 @@ function basicWeight(molecule){
 
 function split(molecule){
   var un = molecule.match(/[(][^)]+[)][0-9]*|[A-Z][a-z]?[0-9]*/gm), parts=[], weight=0;
-  console.log(un);
+  //console.log(un);
   un.forEach(function (part){
     var thing = part.match(/(.*[^0-9])([0-9]*)$/);
     weight+=basicWeight(thing[1].match(/[^()]+/)[0])*fixReturn([thing[2]]);
@@ -37,8 +37,46 @@ function split(molecule){
         return ;
       }
     }
-    console.log("a new world")
     parts.push([thing[1],fixReturn([thing[2]])]);
   })
   return [weight,parts];
+}
+
+function assembleMatrix(equation){
+  //Matrix Datastructure
+  //0 - Molecule Name
+  //1 - Molecule Atomic weight
+  //2 - Variable weight (0)
+  //3 - Component and Commonality
+  //4 - Givin value?
+  //5 - Before or after Equals sign
+  //6 - 0 - Nothing, 1 - Current limiting Reagent, 2 - Unlimiting reagent
+}
+
+function makeTable(matrix){
+  var thing = document.getElementById("table");
+  while (thing.children.length > 1) {
+    thing.removeChild(thing.lastChild);
+  }
+  for (var i = 0; i < matrix[0].length; i++) {
+    var box = document.createElement("div");
+
+    var a = document.createElement("p");
+    a.innerHTML = matrix[0][i]
+    box.appendChild(a);
+
+    var b = document.createElement("p");
+    b.innerHTML = parseInt(matrix[1][i] * 1000) / 1000;
+    box.appendChild(b);
+
+    var c = document.createElement("input");
+    c.placeholder = parseInt(matrix[2][i] * 1000) / 1000;
+    box.appendChild(c);
+
+    thing.appendChild(box);
+  }
+}
+
+function change(){
+  console.log("hi");
 }

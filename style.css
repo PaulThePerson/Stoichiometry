@@ -5,9 +5,13 @@
 #table div {
 	display: flex;
 	flex-direction: column;
+  margin:5px;
 }
 #table p {
 	border-bottom: 1px solid #ccc;
+}
+#table input{
+  margin-top: 13px;
 }
 
 .output{

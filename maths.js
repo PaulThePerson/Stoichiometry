@@ -11,9 +11,8 @@ var fat="";
   //3 - Variable weight (0)
   //4 - Component and Commonality
   //5 - User Typed Value
-  //6 - Placeholder Value
-  //7 - Before or after Equals sign
-  //8 - 0 - Nothing, 1 - Current limiting Reagent, 2 - Unlimiting reagent
+  //6 - Before or after Equals sign
+  //7 - 0 - Nothing, 1 - Current limiting Reagent, 2 - Unlimiting reagent
 
 
 function fixReturn(thing) {
@@ -41,7 +40,7 @@ function basicWeight(molecule) {
 }
 
 function split(molecule){
-  console.log(molecule);
+  //console.log(molecule);
   var un = molecule.match(/[(][^)]+[)][0-9]*|[A-Z][a-z]?[0-9]*/gm), parts=[], weight=0;
   //console.log(un);
   un.forEach(function (part){
@@ -59,7 +58,7 @@ function split(molecule){
 }
 
 function assembleMatrix(equation){
-  var matrix=[equation.match(/[+=][^=+]+/g),[],[],[],[],[],[],[],[]];
+  var matrix=[equation.match(/[+=][^=+]+/g),[],[],[],[],[],[],[]];
   var before=1;
   console.log(matrix);
   for(var i = 0; i<matrix[0].length; i++){
@@ -68,12 +67,11 @@ function assembleMatrix(equation){
     matrix[3].push(0);
     matrix[4].push(split(matrix[0][i].match(/[A-Z].*/)[0])[1]);
     matrix[5].push(0);
-    matrix[6].push(0);
     if(matrix[0][i][0]==="="){
       before=-1;
     }
-    matrix[7].push(before);
-    matrix[8].push(0)
+    matrix[6].push(before);
+    matrix[7].push(0)
     console.log(matrix);
   }
   fat=matrix;
@@ -112,6 +110,15 @@ function change(){
 }
 
 function comp(x){
-  console.log(x);
-  console.log(document.getElementById("input"+x).value);
+  v=document.getElementById("input"+x).value;
+  for(var i=0; i<fat[0].length; i++){
+    fat[5][i]=0
+  }
+  fat[5][x]=parseFloat(v);
+  scale=v/fat[2][x];
+  for(var i=0; i<fat[0].length; i++){
+    fat[3][i]=fat[2][i]*scale;
+    document.getElementById('input'+i).placeholder=parseInt(fat[3][i]*1000)/1000;
+  }
+  console.log(fat);
 }

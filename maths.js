@@ -2,17 +2,27 @@ var atoms = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', '
 var weights = [1.008, 4.002, 6.941, 9.012, 10.814, 12.011, 14.007, 15.999, 18.998, 20.179, 22.989, 24.305, 26.981, 28.085, 30.973, 32.060, 35.450, 39.948, 39.098, 40.078, 44.955, 47.867, 50.941, 51.996, 54.938, 55.845, 58.933, 58.693, 63.546, 65.380, 69.723, 72.630, 74.921, 78.971, 79.904, 83.798, 85.468, 87.620, 88.905, 91.224, 92.906, 95.950, 98, 101.070, 102.906, 106.420, 107.868, 112.414, 114.818, 118.710, 121.760, 127.600, 126.90447, 131.293, 132.90545196, 137.327, 138.90547, 140.116, 140.90766, 144.242, 145, 150.36, 151.964, 157.25, 158.92535, 162.500, 164.93033, 167.259, 168.93422, 173.045, 174.9668, 178.49, 180.94788, 183.84, 186.207, 190.23, 192.217, 195.084, 196.966569, 200.592, 204.38, 207.2, 208.98040, 209, 210, 222, 223, 226, 227, 232.0377, 231.03588, 238.02891, 237, 244, 243, 247, 247, 251, 252, 257, 258, 259, 266, 267, 268, 269, 270, 277, 278, 281, 282, 285, 286, 289, 290, 293, 294, 294];
 
 var cur="";
-
+var eqpos=0;
 var fat="";
+var state=2;
   //Matrix Datastructure
   //0 - Molecule Name
   //1 - Molecule Atomic weight
   //2 - Weight in Equation
   //3 - Variable weight (0)
   //4 - Component and Commonality
-  //5 - User Typed Value
+  //5 - User Typed?
   //6 - Before or after Equals sign
   //7 - 0 - Nothing, 1 - Current limiting Reagent, 2 - Unlimiting reagent
+  //8 - num. of mols (variable)
+
+  //State Datascructure
+  //0 - no inputs, default
+  //1 - one input front
+  //2 - one input back
+  //3 - any number of inputs in front of Equals
+  //4 - any number of inputs in front of equals plus any follower
+  //5 - one behind the equals + reaction box
 
 
 function fixReturn(thing) {
@@ -58,7 +68,7 @@ function split(molecule){
 }
 
 function assembleMatrix(equation){
-  var matrix=[equation.match(/[+=][^=+]+/g),[],[],[],[],[],[],[]];
+  var matrix=[equation.match(/[+=][^=+]+/g),[],[],[],[],[],[],[],[]];
   var before=1;
   console.log(matrix);
   for(var i = 0; i<matrix[0].length; i++){
@@ -69,9 +79,11 @@ function assembleMatrix(equation){
     matrix[5].push(0);
     if(matrix[0][i][0]==="="){
       before=-1;
+      eqpos=i;
     }
     matrix[6].push(before);
     matrix[7].push(0)
+    matrix[8].push(fixReturn([matrix[0][i].match(/[+=]([0-9]*)/)[1]]));
     console.log(matrix);
   }
   fat=matrix;
@@ -96,8 +108,14 @@ function makeTable(matrix){
     var c = document.createElement("input");
     c.placeholder = matrix[2][i];
     c.setAttribute("id", "input" + String(i));
-    c.setAttribute("onKeyUp", "comp("+String(i)+")");
+    c.setAttribute("onKeyUp", "tra1("+String(i)+")");
     box.appendChild(c);
+
+    var d = document.createElement("input");
+    d.placeholder = matrix[8][i];
+    d.setAttribute("id", "2input" + String(i));
+    d.setAttribute("onKeyUp", "tra2("+String(i)+")");
+    box.appendChild(d);
 
     thing.appendChild(box);
   }
@@ -109,16 +127,49 @@ function change(){
   makeTable(fat);
 }
 
+function clear(x){
+  document.getElementById("2input"+x).value="";
+  document.getElementById("input"+x).value="";
+}
+
+function set(x){
+  document.getElementById("2input"+x).placeholder=fat[8][x];
+  document.getElementById("input"+x).placeholder=fat[3][x];
+}
+
 function comp(x){
-  v=document.getElementById("input"+x).value;
-  for(var i=0; i<fat[0].length; i++){
-    fat[5][i]=0
+  if(state){
+
   }
-  fat[5][x]=parseFloat(v);
-  scale=v/fat[2][x];
-  for(var i=0; i<fat[0].length; i++){
-    fat[3][i]=fat[2][i]*scale;
-    document.getElementById('input'+i).placeholder=parseInt(fat[3][i]*1000)/1000;
+
+}
+
+function tra1(x){
+  if(document.getElementById("input"+x).value===""){
+    fat[5][x]=false;
+    comp(-1);
+    return;
   }
-  console.log(fat);
+  var v=parseFloat(document.getElementById("input"+x).value);
+  fat[5][x]=true;
+  fat[8][x]=v;
+  fat[3][x]=v/fat[1];
+  document.getElementById("2input"+x).value="";
+  document.getElementById("2input"+x).placeholder=parseInt(fat[3][x]*1000)/1000;
+  comp(x);
+}
+
+function tra2(x){
+  if(document.getElementById("input"+x).value===""){
+    fat[5][x]=false;
+    comp(-1);
+    return;
+  }
+  var v=parseFloat(document.getElementById("2input"+x).value);
+  fat[5][x]=true;
+  fat[8][x]=v;
+  fat[3][x]=v*fat[1];
+  document.getElementById("input"+x).value="";
+  document.getElementById("input"+x).placeholder=parseInt(fat[3][x]*1000)/1000;
+  comp(x);
 }

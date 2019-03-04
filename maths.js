@@ -22,7 +22,8 @@ var state=2;
   //2 - one input back
   //3 - any number of inputs in front of Equals
   //4 - any number of inputs in front of equals plus any follower
-  //5 - one behind the equals + reaction box
+  //5 - any number of inputs in front of the equals + reaction box
+  //6 - one behind the equals + reaction box
 
 
 function fixReturn(thing) {
@@ -50,9 +51,7 @@ function basicWeight(molecule) {
 }
 
 function split(molecule){
-  //console.log(molecule);
   var un = molecule.match(/[(][^)]+[)][0-9]*|[A-Z][a-z]?[0-9]*/gm), parts=[], weight=0;
-  //console.log(un);
   un.forEach(function (part){
     var thing = part.match(/(.*[^0-9])([0-9]*)$/);
     weight+=basicWeight(thing[1].match(/[^()]+/)[0])*fixReturn([thing[2]]);
@@ -70,7 +69,7 @@ function split(molecule){
 function assembleMatrix(equation){
   var matrix=[equation.match(/[+=][^=+]+/g),[],[],[],[],[],[],[],[]];
   var before=1;
-  console.log(matrix);
+  //console.log(matrix);
   for(var i = 0; i<matrix[0].length; i++){
     matrix[1].push(split(matrix[0][i].match(/[A-Z].*/)[0])[0]);
     matrix[2].push(matrix[1][i]*fixReturn([matrix[0][i].match(/[+=]([0-9]*)/)[1]]));
@@ -84,7 +83,7 @@ function assembleMatrix(equation){
     matrix[6].push(before);
     matrix[7].push(0)
     matrix[8].push(fixReturn([matrix[0][i].match(/[+=]([0-9]*)/)[1]]));
-    console.log(matrix);
+    //console.log(matrix);
   }
   fat=matrix;
 }
@@ -127,6 +126,12 @@ function change(){
   makeTable(fat);
 }
 
+document.getElementById("in").addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+        change();
+    }
+});
+
 function clear(x){
   document.getElementById("2input"+x).value="";
   document.getElementById("input"+x).value="";
@@ -145,6 +150,7 @@ function comp(x){
 }
 
 function tra1(x){
+  console.log("called tra1");
   if(document.getElementById("input"+x).value===""){
     fat[5][x]=false;
     comp(-1);
@@ -153,14 +159,15 @@ function tra1(x){
   var v=parseFloat(document.getElementById("input"+x).value);
   fat[5][x]=true;
   fat[8][x]=v;
-  fat[3][x]=v/fat[1];
+  fat[3][x]=v/fat[1][x];
   document.getElementById("2input"+x).value="";
   document.getElementById("2input"+x).placeholder=parseInt(fat[3][x]*1000)/1000;
   comp(x);
 }
 
 function tra2(x){
-  if(document.getElementById("input"+x).value===""){
+  console.log("called tra2");
+  if(document.getElementById("2"+"input"+x).value===""){
     fat[5][x]=false;
     comp(-1);
     return;
@@ -168,7 +175,8 @@ function tra2(x){
   var v=parseFloat(document.getElementById("2input"+x).value);
   fat[5][x]=true;
   fat[8][x]=v;
-  fat[3][x]=v*fat[1];
+  fat[3][x]=v*fat[1][x];
+  console.log(fat);
   document.getElementById("input"+x).value="";
   document.getElementById("input"+x).placeholder=parseInt(fat[3][x]*1000)/1000;
   comp(x);
